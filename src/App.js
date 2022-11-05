@@ -3,25 +3,18 @@ import { FaSearch } from "react-icons/fa";
 import useFetch from "./useFetch";
 import Photo from "./Photo";
 
-// const clientID = `?client_id=${process.env.REACT_APP_ACCESS_KEY}`;
-const mainUrl = `https://api.unsplash.com/photos/`;
-const searchUrl = `https://api.unsplash.com/search/photos/`;
+//TODO: use some memo functioality to prevent rerendering on text input change
 
 function App() {
-  const [url, setUrl] = useState(`${mainUrl}?${clientID}`);
   const [query, setQuery] = useState("");
+  const [text, setText] = useState("");
   const [page, setPage] = useState(1);
   const loader = useRef(null);
-  const { loading, error, images } = useFetch(url, query, page);
+  const { images } = useFetch(query, page);
 
   const findImages = (e) => {
     e.preventDefault();
-    if (query.trim() === "") setUrl(`${mainUrl}?${clientID}`);
-    else {
-      setUrl(
-        `${searchUrl}?query=${query}&${clientID}&per_page=10&page=${page}`
-      );
-    }
+    setQuery(text);
     setPage(1);
   };
 
@@ -40,6 +33,7 @@ function App() {
     };
     const observer = new IntersectionObserver(handleObserver, option);
     if (loader.current) observer.observe(loader.current);
+    // setPage((prev) => prev + 1);
   }, [handleObserver]);
 
   return (
@@ -49,8 +43,8 @@ function App() {
           <input
             type="text"
             className="form-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
           />
           <button className="submit_btn" onClick={findImages}>
             <FaSearch />
